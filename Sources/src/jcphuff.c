@@ -4,8 +4,9 @@
  * This file was part of the Independent JPEG Group's software:
  * Copyright (C) 1995-1997, Thomas G. Lane.
  * libjpeg-turbo Modifications:
- * Copyright (C) 2011, 2015, 2018, D. R. Commander.
+ * Copyright (C) 2011, 2015, 2018, 2021, D. R. Commander.
  * Copyright (C) 2016, 2018, Matthieu Darbois.
+ * Copyright (C) 2020, Arm Limited.
  * For conditions of distribution and use, see the accompanying README.ijg
  * file.
  *
@@ -51,15 +52,19 @@
  * flags (this defines __thumb__).
  */
 
-/* NOTE: Both GCC and Clang define __GNUC__ */
-#if defined(__GNUC__) && (defined(__arm__) || defined(__aarch64__))
+#if defined(__arm__) || defined(__aarch64__) || defined(_M_ARM) || \
+    defined(_M_ARM64)
 #if !defined(__thumb__) || defined(__thumb2__)
 #define USE_CLZ_INTRINSIC
 #endif
 #endif
 
 #ifdef USE_CLZ_INTRINSIC
+#if defined(_MSC_VER) && !defined(__clang__)
+#define JPEG_NBITS_NONZERO(x)  (32 - _CountLeadingZeros(x))
+#else
 #define JPEG_NBITS_NONZERO(x)  (32 - __builtin_clz(x))
+#endif
 #define JPEG_NBITS(x)          (x ? JPEG_NBITS_NONZERO(x) : 0)
 #else
 #include "jpeg_nbits_table.h"
@@ -169,24 +174,26 @@ INLINE
 METHODDEF(int)
 count_zeroes(size_t *x)
 {
-  int result;
 #if defined(HAVE_BUILTIN_CTZL)
+  int result;
   result = __builtin_ctzl(*x);
   *x >>= result;
 #elif defined(HAVE_BITSCANFORWARD64)
+  unsigned long result;
   _BitScanForward64(&result, *x);
   *x >>= result;
 #elif defined(HAVE_BITSCANFORWARD)
+  unsigned long result;
   _BitScanForward(&result, *x);
   *x >>= result;
 #else
-  result = 0;
+  int result = 0;
   while ((*x & 1) == 0) {
     ++result;
     *x >>= 1;
   }
 #endif
-  return result;
+  return (int)result;
 }
 
 
