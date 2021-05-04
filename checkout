@@ -49,7 +49,7 @@ rm -rf ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo || true
 mkdir -p ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
 
 cd ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
-cmake -G Ninja ${PROJECT_DIR}/dependencies/libjpeg-turbo
+cmake -G Ninja ${PROJECT_DIR}/dependencies/libjpeg-turbo -DWITH_SIMD=0
 
 rm -rf ${PROJECT_DIR}/Sources/src || true
 mkdir -p ${PROJECT_DIR}/Sources/src
