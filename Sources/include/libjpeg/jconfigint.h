@@ -1,5 +1,5 @@
 /* libjpeg-turbo build number */
-#define BUILD  "20210716"
+#define BUILD  "20210901"
 
 /* Compiler's inline keyword */
 #undef inline
@@ -14,7 +14,7 @@
 #define PACKAGE_NAME  "libjpeg-turbo"
 
 /* Version number of package */
-#define VERSION  "2.1.1"
+#define VERSION  "2.1.2"
 
 /* The size of `size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T  8
